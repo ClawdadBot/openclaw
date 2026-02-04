@@ -93,6 +93,8 @@ export type SessionEntry = {
   lastThreadId?: string | number;
   skillsSnapshot?: SessionSkillSnapshot;
   systemPromptReport?: SessionSystemPromptReport;
+  /** Tracks whether thread starter context has been injected (prevents duplicate injection). */
+  threadStarterInjected?: boolean;
 };
 
 export function mergeSessionEntry(

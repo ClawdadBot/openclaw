@@ -228,10 +228,28 @@ export async function runPreparedReply(
     prefixedBodyBase,
   });
   const threadStarterBody = ctx.ThreadStarterBody?.trim();
-  const threadStarterNote =
-    isNewSession && threadStarterBody
-      ? `[Thread starter - for context]\n${threadStarterBody}`
-      : undefined;
+  // Inject thread starter on first turn in this thread session, not just when session is new.
+  // Thread sessions may exist before the first user message arrives (e.g., created during bot reply).
+  const needsThreadStarter = threadStarterBody && !sessionEntry?.threadStarterInjected;
+  const threadStarterNote = needsThreadStarter
+    ? `[Thread starter - for context]\n${threadStarterBody}`
+    : undefined;
+  // Mark thread starter as injected (persisted via sessionEntry reference below).
+  if (needsThreadStarter && sessionEntry) {
+    sessionEntry.threadStarterInjected = true;
+    sessionEntry.updatedAt = Date.now();
+    if (sessionStore && sessionKey) {
+      sessionStore[sessionKey] = sessionEntry;
+    }
+    if (storePath && sessionKey) {
+      await updateSessionStore(storePath, (store) => {
+        if (store[sessionKey]) {
+          store[sessionKey].threadStarterInjected = true;
+          store[sessionKey].updatedAt = Date.now();
+        }
+      });
+    }
+  }
   const skillResult = await ensureSkillSnapshot({
     sessionEntry,
     sessionStore,
