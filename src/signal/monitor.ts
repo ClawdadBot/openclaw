@@ -366,6 +366,7 @@ export async function monitorSignalProvider(opts: MonitorSignalOpts = {}): Promi
   });
   const reactionMode = accountInfo.config.reactionNotifications ?? "own";
   const reactionAllowlist = normalizeAllowList(accountInfo.config.reactionAllowlist);
+  const reactionWake = accountInfo.config.reactionWake ?? false;
   const mediaMaxBytes = (opts.mediaMaxMb ?? accountInfo.config.mediaMaxMb ?? 8) * 1024 * 1024;
   const ignoreAttachments = opts.ignoreAttachments ?? accountInfo.config.ignoreAttachments ?? false;
   const sendReadReceipts = Boolean(opts.sendReadReceipts ?? accountInfo.config.sendReadReceipts);
@@ -434,6 +435,7 @@ export async function monitorSignalProvider(opts: MonitorSignalOpts = {}): Promi
       groupPolicy,
       reactionMode,
       reactionAllowlist,
+      reactionWake,
       mediaMaxBytes,
       ignoreAttachments,
       sendReadReceipts,
